@@ -40,7 +40,7 @@
 ## ビルド・実行
 
 ```bash
-cd /Users/ayumu.hisada/Github/mac_branch
+cd path/to/mac_branch
 swift build
 swift run
 ```
@@ -49,3 +49,4 @@ swift run
 
 - 選択したリポジトリパスは `UserDefaults` に保存され、次回起動時に復元されます。
 - Gitコマンドにはシステムの `/usr/bin/git` を使用します。
+- 本アプリはネットワーク接続を行わず、保存するのは選択したローカルパスのみです。
