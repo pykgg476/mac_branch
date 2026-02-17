@@ -35,6 +35,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let repoPathKey = "GitBranchMenuBar.selectedRepoPath"
     private let refreshInterval: TimeInterval = 5
     private let maxStatusLength = 28
+    private let repositoryIcon = "🗄️"
 
     private var repositoryURL: URL?
     private var repoPathMenuItem: NSMenuItem?
@@ -53,17 +54,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func setupMenu() {
-        updateStatusTitle("⚪ No repo selected")
+        updateStatusTitle("No repo selected")
 
-        let selectRepoItem = NSMenuItem(title: "📁 リポジトリを選択...", action: #selector(selectRepository), keyEquivalent: "s")
+        let selectRepoItem = NSMenuItem(title: "リポジトリを選択...", action: #selector(selectRepository), keyEquivalent: "s")
         selectRepoItem.target = self
         menu.addItem(selectRepoItem)
 
-        let clearRepoItem = NSMenuItem(title: "🗑️ 選択を解除", action: #selector(clearRepository), keyEquivalent: "d")
+        let clearRepoItem = NSMenuItem(title: "選択を解除", action: #selector(clearRepository), keyEquivalent: "d")
         clearRepoItem.target = self
         menu.addItem(clearRepoItem)
 
-        let launchAtLoginItem = NSMenuItem(title: "🚀 ログイン時に起動", action: #selector(toggleLaunchAtLogin(_:)), keyEquivalent: "l")
+        let launchAtLoginItem = NSMenuItem(title: "ログイン時に起動", action: #selector(toggleLaunchAtLogin(_:)), keyEquivalent: "l")
         launchAtLoginItem.target = self
         launchAtLoginMenuItem = launchAtLoginItem
         menu.addItem(launchAtLoginItem)
@@ -72,13 +73,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         menu.addItem(.separator())
 
-        repoPathMenuItem = NSMenuItem(title: "📁 リポジトリ: 未選択", action: nil, keyEquivalent: "")
+        repoPathMenuItem = NSMenuItem(title: "リポジトリ: 未選択", action: nil, keyEquivalent: "")
         repoPathMenuItem?.isEnabled = false
         if let repoPathMenuItem {
             menu.addItem(repoPathMenuItem)
         }
 
-        statusMenuItem = NSMenuItem(title: "🌿 ブランチ: -", action: nil, keyEquivalent: "")
+        statusMenuItem = NSMenuItem(title: "ブランチ: -", action: nil, keyEquivalent: "")
         statusMenuItem?.isEnabled = false
         if let statusMenuItem {
             menu.addItem(statusMenuItem)
@@ -86,17 +87,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         menu.addItem(.separator())
 
-        let refreshItem = NSMenuItem(title: "🔄 更新", action: #selector(updateBranchDisplay), keyEquivalent: "r")
+        let refreshItem = NSMenuItem(title: "更新", action: #selector(updateBranchDisplay), keyEquivalent: "r")
         refreshItem.target = self
         menu.addItem(refreshItem)
 
-        let openItem = NSMenuItem(title: "📂 リポジトリを開く", action: #selector(openRepositoryInFinder), keyEquivalent: "o")
+        let openItem = NSMenuItem(title: "リポジトリを開く", action: #selector(openRepositoryInFinder), keyEquivalent: "o")
         openItem.target = self
         menu.addItem(openItem)
 
         menu.addItem(.separator())
 
-        let quitItem = NSMenuItem(title: "🚪 終了", action: #selector(NSApp.terminate(_:)), keyEquivalent: "q")
+        let quitItem = NSMenuItem(title: "終了", action: #selector(NSApp.terminate(_:)), keyEquivalent: "q")
         menu.addItem(quitItem)
 
         statusItem.menu = menu
@@ -130,8 +131,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             defaults.set(url.path, forKey: repoPathKey)
         }
 
-        repoPathMenuItem?.title = "📁 リポジトリ: \(url.lastPathComponent)"
-        statusMenuItem?.title = "🌿 ブランチ: 更新中..."
+        repoPathMenuItem?.title = "リポジトリ: \(url.lastPathComponent) \(repositoryIcon)"
+        statusMenuItem?.title = "ブランチ: 更新中..."
         statusItem.button?.appearsDisabled = false
         updateBranchDisplay()
     }
@@ -144,11 +145,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             displayText = text
         } else {
             let repoName = repositoryURL?.lastPathComponent ?? "repo"
-            displayText = "🌿 \(repoName):\(text)"
+            displayText = "\(repoName) \(repositoryIcon):\(text)"
         }
 
         statusItem.button?.title = shorten(displayText, max: maxStatusLength)
-        statusMenuItem?.title = "🌿 ブランチ: \(text)"
+        statusMenuItem?.title = "ブランチ: \(text)"
     }
 
     private func updateLaunchAtLoginMenuItemState() {
@@ -157,11 +158,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         if #available(macOS 13.0, *) {
-            launchAtLoginMenuItem.title = "🚀 ログイン時に起動"
+            launchAtLoginMenuItem.title = "ログイン時に起動"
             launchAtLoginMenuItem.isEnabled = true
             launchAtLoginMenuItem.state = LaunchAtLoginManager.isEnabled() ? .on : .off
         } else {
-            launchAtLoginMenuItem.title = "🚀 ログイン時に起動 (macOS 13+)"
+            launchAtLoginMenuItem.title = "ログイン時に起動 (macOS 13+)"
             launchAtLoginMenuItem.isEnabled = false
             launchAtLoginMenuItem.state = .off
         }
@@ -191,9 +192,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     @objc private func clearRepository() {
         repositoryURL = nil
         defaults.removeObject(forKey: repoPathKey)
-        repoPathMenuItem?.title = "📁 リポジトリ: 未選択"
+        repoPathMenuItem?.title = "リポジトリ: 未選択"
         statusItem.button?.appearsDisabled = false
-        updateStatusTitle("⚪ No repo selected")
+        updateStatusTitle("No repo selected")
     }
 
     @objc private func openRepositoryInFinder() {
@@ -205,7 +206,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc private func updateBranchDisplay() {
         guard let repositoryURL else {
-            updateStatusTitle("⚪ No repo selected")
+            updateStatusTitle("No repo selected")
             return
         }
 
